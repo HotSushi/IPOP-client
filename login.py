@@ -12,6 +12,7 @@ from Crypto import Random
 class LoginWidget(QtGui.QWidget):
     #Signals
     keyreg = pyqtSignal()
+    started = pyqtSignal()
     
     # add layouts
     def __init__(self):
@@ -33,6 +34,7 @@ class LoginWidget(QtGui.QWidget):
         self.timer = QTimer()
         
         self.ipopproc = QProcess()
+        self.gvpnproc = QProcess()
         
         #generate new key for the session
         random_generator = Random.new().read
@@ -47,8 +49,8 @@ class LoginWidget(QtGui.QWidget):
             #feature: check if valid Jid
             self.changeStatus('Enter XMPP ID and password')
         else:
-            self.jid = xmppTxtbox.displayText()
-            self.jpassword = xmppPwTxtbox.displayText()
+            self.jid = str(xmppTxtbox.displayText())
+            self.jpassword = str(xmppPwTxtbox.displayText())
             self.Connect.generateURL(self.ui.hostipTxtbox.displayText())
             if(not self.Connect.checkValid()):
                 self.changeStatus('Could not connect')
@@ -60,8 +62,9 @@ class LoginWidget(QtGui.QWidget):
     def getServerJid(self):
         self.serverjid = self.Connect.getServerJid()
         self.changeProgress(25, "Server XMPP ID received")
-        self.setSingleShotTimer(self.registerKey)
-
+        
+        #self.setSingleShotTimer(self.registerKey)
+        self.setSingleShotTimer(self.startIpop)
     
     def registerKey(self):
         public_key = self.key.publickey().exportKey('PEM')
@@ -97,9 +100,18 @@ class LoginWidget(QtGui.QWidget):
         self.changeProgress(75, "Starting IPOP")
         #fix-this
         self.ipopproc.setWorkingDirectory("/home/hotsushi/game/ipoptemp/")
-        options = QStringList()
-        options << "-c" << "./ipop-tincan-x86_64 1> out.log 2> err.log &"
-        self.ipopproc.start("/bin/sh", options);
+        self.ipopproc.start("gksudo",['./ipop-tincan-x86_64',' 1> out.log 2> err.log ']);
+        self.ipopproc.started.connect(self.startGvpn)
+        
+    def startGvpn(self):
+        self.changeProgress(85,'Starting GVPN')
+        self.gvpnproc.setWorkingDirectory("/home/hotsushi/game/ipoptemp/")
+        self.gvpnproc.start("./gvpn_controller.py",['-c conff.json', '&> log.txt']);
+        self.gvpnproc.started.connect(self.processStarted)
+        
+    def processStarted(self):
+        self.changeProgress(100,'Started Successfully')
+        self.started.emit()
         
         
     def setSingleShotTimer(self, functionaddr):
