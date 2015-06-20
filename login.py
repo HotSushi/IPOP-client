@@ -38,9 +38,7 @@ class LoginWidget(QtGui.QWidget):
         
         #generate new key for the session
         random_generator = Random.new().read
-        self.key = RSA.generate(2048, random_generator)
-        
-        
+        self.key = RSA.generate(2048, random_generator)   
 
     def changeView(self):
         xmppTxtbox = self.ui.xmppTxtbox
@@ -63,6 +61,7 @@ class LoginWidget(QtGui.QWidget):
         self.serverjid = self.Connect.getServerJid()
         self.changeProgress(25, "Server XMPP ID received")
         self.setSingleShotTimer(self.registerKey)
+        #self.setSingleShotTimer(self.startIpop)
         
     def registerKey(self):
         public_key = self.key.publickey().exportKey('PEM')
@@ -104,9 +103,12 @@ class LoginWidget(QtGui.QWidget):
     def startGvpn(self):
         self.changeProgress(85,'Starting GVPN')
         self.gvpnproc.setWorkingDirectory("/home/hotsushi/game/ipoptemp/")
-        self.gvpnproc.start("./gvpn_controller.py",['-c conff.json', '&> log.txt']);
-        self.gvpnproc.started.connect(self.processStarted)
+        self.gvpnproc.setStandardOutputFile('/home/hotsushi/game/ipoptemp/LOG.txt')
+        self.gvpnproc.setStandardErrorFile('/home/hotsushi/game/ipoptemp/ERROR.txt')
         
+        self.gvpnproc.start("./gvpn_controller.py",['-c','conff.json']);
+        self.gvpnproc.started.connect(self.processStarted)
+    
     def processStarted(self):
         self.changeProgress(100,'Started Successfully')
         self.started.emit()
