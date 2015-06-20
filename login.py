@@ -62,10 +62,8 @@ class LoginWidget(QtGui.QWidget):
     def getServerJid(self):
         self.serverjid = self.Connect.getServerJid()
         self.changeProgress(25, "Server XMPP ID received")
+        self.setSingleShotTimer(self.registerKey)
         
-        #self.setSingleShotTimer(self.registerKey)
-        self.setSingleShotTimer(self.startIpop)
-    
     def registerKey(self):
         public_key = self.key.publickey().exportKey('PEM')
         #get this from the form
@@ -100,8 +98,8 @@ class LoginWidget(QtGui.QWidget):
         self.changeProgress(75, "Starting IPOP")
         #fix-this
         self.ipopproc.setWorkingDirectory("/home/hotsushi/game/ipoptemp/")
-        self.ipopproc.start("gksudo",['./ipop-tincan-x86_64',' 1> out.log 2> err.log ']);
-        self.ipopproc.started.connect(self.startGvpn)
+        self.ipopproc.start("gksudo", ['./script.sh']);
+        self.ipopproc.readyRead.connect(self.startGvpn)
         
     def startGvpn(self):
         self.changeProgress(85,'Starting GVPN')
