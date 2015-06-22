@@ -6,20 +6,20 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>359</width>
-    <height>214</height>
+    <width>477</width>
+    <height>425</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QFrame" name="verticalFrame">
+  <widget class="QWidget" name="verticalLayoutWidget">
    <property name="geometry">
     <rect>
-     <x>9</x>
-     <y>9</y>
-     <width>341</width>
-     <height>201</height>
+     <x>20</x>
+     <y>50</y>
+     <width>431</width>
+     <height>271</height>
     </rect>
    </property>
    <layout class="QVBoxLayout" name="monitorLayout">

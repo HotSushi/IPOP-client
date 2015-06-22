@@ -1,38 +1,70 @@
 import sys
 from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import pyqtSlot,SIGNAL,SLOT
-from PyQt4.QtGui import *
-from ui.monitor import Ui_Monitor
-from graph import GangliaGraph
-#
+from PyQt4.QtCore import pyqtSignal
+from monitor import MonitorWidget
 from login import LoginWidget
 import urllib
+import json
 
-class TempForm(QtGui.QMainWindow):
-    def __init__(self, parent=None):
-        QtGui.QWidget.__init__(self,parent)
-        self.ui = Ui_Monitor()
-        self.ui.setupUi(self)
-        self.connectSignals()
-        self.graphobj = GangliaGraph()
+loginapp = ''
+tabs = ''
+
+class TabWidget(QtGui.QTabWidget):
+    stopped = pyqtSignal()
+    
+    def __init__(self):
+        super(TabWidget, self).__init__()
+                
+        self.stop = QtGui.QPushButton()
+        self.stop.setText("Stop Ipop")
+        self.stop.resize(3,2)
+        self.addTab(self.stop,"Stop")
+        self.stop.clicked.connect(self.stopped.emit)
         
+        self.monitorapp = MonitorWidget()
+        self.addTab(self.monitorapp,"Monitor")
+        
+        self.logapp = QtGui.QTextEdit()        
+        with open('/home/hotsushi/game/ipoptemp/ERROR.txt','r') as fi:
+            self.logapp.setText(fi.read())
+            self.logapp.setReadOnly(True)            
+        self.addTab(self.logapp,"Log")
+        
+        self.info = QtGui.QLabel()
+        info,out = '',''
+        with open('/home/hotsushi/game/ipoptemp/conff.json','r') as finfo:
+            info = str(finfo.read())
+        dic = json.loads(info)
+        for key in sorted(dic.iterkeys()):
+            out = out + key +":"+ str(dic[key]) + '\n'
+        self.info.setText(out)
+        self.addTab(self.info,"Info")        
+                  
+        
+        
+        
+def loggedin():
+    tabs.show()
+    loginapp.hide()
     
-    def connectSignals(self):
-        durationCB = self.ui.durationComboBox
-        graphTypeCB = self.ui.graphTypeComboBox
-        durationCB.connect( durationCB, SIGNAL("currentIndexChanged(int)"), self.changeGraph )
-        graphTypeCB.connect( graphTypeCB, SIGNAL("currentIndexChanged(int)"), self.changeGraph )        
+def loggedout():
+    loginapp.stop()
+    loginapp.show()
+    tabs.hide()
     
-    def changeGraph(self):
-        duridx = self.ui.durationComboBox.currentIndex()
-        graphtypeidx = self.ui.graphTypeComboBox.currentIndex()
-        image = self.graphobj.getGraph(duridx , graphtypeidx)
-        self.ui.graphImage.setPixmap(QtGui.QPixmap(image))
         
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
-    #myapp = TempForm()
-    #myapp.show()
-    myapp = LoginWidget()
-    myapp.show()
+    
+    tabs = TabWidget()
+    tabs.stopped.connect(loggedout)
+    
+    #should return qprocess
+    loginapp = LoginWidget()
+    loginapp.show()
+    loginapp.started.connect(loggedin)
+    
+    
+    
+    
     sys.exit(app.exec_())

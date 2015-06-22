@@ -37,7 +37,7 @@ class GangliaGraph() :
     
     def setValues(self, duration, graphtype) : 
         self.values['r'] = self.durationMap[duration]
-        #FIX THIS
+        #fix-this
         self.values['m'] = self.graphtypeMap[graphtype] + '172.31.0.102'        
         if graphtype == 0 : 
             self.values['vl'] = 'Bytes/Second'

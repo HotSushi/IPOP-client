@@ -60,8 +60,8 @@ class LoginWidget(QtGui.QWidget):
     def getServerJid(self):
         self.serverjid = self.Connect.getServerJid()
         self.changeProgress(25, "Server XMPP ID received")
-        self.setSingleShotTimer(self.registerKey)
-        #self.setSingleShotTimer(self.startIpop)
+        #self.setSingleShotTimer(self.registerKey)
+        self.setSingleShotTimer(self.startIpop)
         
     def registerKey(self):
         public_key = self.key.publickey().exportKey('PEM')
@@ -112,7 +112,11 @@ class LoginWidget(QtGui.QWidget):
     def processStarted(self):
         self.changeProgress(100,'Started Successfully')
         self.started.emit()
-        
+    
+    def stop(self):
+        self.gvpnproc.kill()
+        self.ipopproc.kill()
+        self.setView(0)  
         
     def setSingleShotTimer(self, functionaddr):
         self.timer = QTimer()
@@ -130,6 +134,11 @@ class LoginWidget(QtGui.QWidget):
     
     def changeProgress(self, percent, text):
         self.ui.progressBar.setValue(percent)
-        self.ui.progressLabel.setText(text)      
+        self.ui.progressLabel.setText(text) 
+        
+    def setView(self,idx):
+        self.ui.loginStackedWidget.setCurrentIndex(idx)
+            
+         
         
                    
