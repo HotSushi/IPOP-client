@@ -4,6 +4,7 @@ from PyQt4.QtCore import *#pyqtSlot, SIGNAL, SLOT, QTimer
 from ui.login import Ui_Login
 from connect import Connect
 from clientxmpp import ClientXmppBot
+from process import IPOPProcess
 import urllib
 
 from Crypto.PublicKey import RSA
@@ -36,6 +37,8 @@ class LoginWidget(QtGui.QWidget):
         self.ipopproc = QProcess()
         self.gvpnproc = QProcess()
         
+        self.process = IPOPProcess()
+        
         #generate new key for the session
         random_generator = Random.new().read
         self.key = RSA.generate(2048, random_generator)   
@@ -61,7 +64,7 @@ class LoginWidget(QtGui.QWidget):
         self.serverjid = self.Connect.getServerJid()
         self.changeProgress(25, "Server XMPP ID received")
         #self.setSingleShotTimer(self.registerKey)
-        self.setSingleShotTimer(self.startIpop)
+        self.setSingleShotTimer(self.startProcess)#Ipop)
         
     def registerKey(self):
         public_key = self.key.publickey().exportKey('PEM')
@@ -90,9 +93,13 @@ class LoginWidget(QtGui.QWidget):
         self.Connect.storeConfigData(data)
         
         self.changeProgress(50, "Configuration received")
-        self.setSingleShotTimer(self.startIpop)
+        self.setSingleShotTimer(self.startProcess)#Ipop)
         
+    def startProcess(self):
+        self.connect(self.process, SIGNAL("controller_started()"), self.processStarted)
+        self.process.start()
         
+    '''    
     def startIpop(self):
         self.changeProgress(75, "Starting IPOP")
         #fix-this
@@ -108,14 +115,14 @@ class LoginWidget(QtGui.QWidget):
         
         self.gvpnproc.start("./gvpn_controller.py",['-c','conff.json']);
         self.gvpnproc.started.connect(self.processStarted)
+    '''
     
     def processStarted(self):
         self.changeProgress(100,'Started Successfully')
         self.started.emit()
     
     def stop(self):
-        self.gvpnproc.kill()
-        self.ipopproc.kill()
+        self.process.stop()
         self.setView(0)  
         
     def setSingleShotTimer(self, functionaddr):
