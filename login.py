@@ -4,7 +4,7 @@ from PyQt4.QtCore import *#pyqtSlot, SIGNAL, SLOT, QTimer
 from ui.login import Ui_Login
 from connect import Connect
 from clientxmpp import ClientXmppBot
-from process import IPOPProcess
+import process
 import urllib
 
 from Crypto.PublicKey import RSA
@@ -25,6 +25,8 @@ class LoginWidget(QtGui.QWidget):
         self.ui.Loginwidget.setLayout(self.ui.loginLayout)
         self.ui.Progresswidget.setLayout(self.ui.progressLayout)
         
+        process.init()
+        
         self.connectSignals()
         self.Connect = Connect()
         self.jid = ""
@@ -34,10 +36,6 @@ class LoginWidget(QtGui.QWidget):
         self.ui.xmppPwTxtbox.setText("bob123")
         self.timer = QTimer()
         
-        self.ipopproc = QProcess()
-        self.gvpnproc = QProcess()
-        
-        self.process = IPOPProcess()
         
         #generate new key for the session
         random_generator = Random.new().read
@@ -61,10 +59,10 @@ class LoginWidget(QtGui.QWidget):
             self.setSingleShotTimer(self.getServerJid)
             
     def getServerJid(self):
-        self.serverjid = self.Connect.getServerJid()
+        self.serverjid = self.Connect.getServerJid(self.jid)
         self.changeProgress(25, "Server XMPP ID received")
-        #self.setSingleShotTimer(self.registerKey)
-        self.setSingleShotTimer(self.startProcess)#Ipop)
+        self.setSingleShotTimer(self.registerKey)
+        #self.setSingleShotTimer(self.startProcess)#Ipop)
         
     def registerKey(self):
         public_key = self.key.publickey().exportKey('PEM')
@@ -76,7 +74,7 @@ class LoginWidget(QtGui.QWidget):
         self.xmpp.send_key_server()
         
     
-    #when key is succesfully     
+    #when key is succesfully registered     
     def registerKeyCB(self):
         #otherwise it would be called from non-qt thread
         self.keyreg.emit()
@@ -96,33 +94,9 @@ class LoginWidget(QtGui.QWidget):
         self.setSingleShotTimer(self.startProcess)#Ipop)
         
     def startProcess(self):
-        self.connect(self.process, SIGNAL("controller_started()"), self.processStarted)
-        self.process.start()
-        
-    '''    
-    def startIpop(self):
-        self.changeProgress(75, "Starting IPOP")
-        #fix-this
-        self.ipopproc.setWorkingDirectory("/home/hotsushi/game/ipoptemp/")
-        self.ipopproc.start("gksudo", ['./script.sh']);
-        self.ipopproc.readyRead.connect(self.startGvpn)
-        
-    def startGvpn(self):
-        self.changeProgress(85,'Starting GVPN')
-        self.gvpnproc.setWorkingDirectory("/home/hotsushi/game/ipoptemp/")
-        self.gvpnproc.setStandardOutputFile('/home/hotsushi/game/ipoptemp/LOG.txt')
-        self.gvpnproc.setStandardErrorFile('/home/hotsushi/game/ipoptemp/ERROR.txt')
-        
-        self.gvpnproc.start("./gvpn_controller.py",['-c','conff.json']);
-        self.gvpnproc.started.connect(self.processStarted)
-    '''
+        process.ipopprocess.start()
     
-    def processStarted(self):
-        self.changeProgress(100,'Started Successfully')
-        self.started.emit()
-    
-    def stop(self):
-        self.process.stop()
+    def setToLogin(self):
         self.setView(0)  
         
     def setSingleShotTimer(self, functionaddr):
@@ -133,7 +107,8 @@ class LoginWidget(QtGui.QWidget):
         
     def connectSignals(self):
         connectBtn = self.ui.connectBtn
-        connectBtn.connect( connectBtn, SIGNAL("clicked()"), self.changeView )      
+        connectBtn.connect( connectBtn, SIGNAL("clicked()"), self.changeView )
+        self.connect(process.ipopprocess, SIGNAL("controller_started()"), self.started.emit)
         self.keyreg.connect(self.getConfiguration)
 
     def changeStatus(self, stringg):

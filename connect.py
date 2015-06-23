@@ -30,8 +30,8 @@ class Connect() :
         response = urllib2.urlopen(self.url+'?'+data)
         return response.read()
         
-    def getServerJid(self):
-        values = {'type':'getserverjid'}
+    def getServerJid(self, jid):
+        values = {'type':'getserverjid','xmppid' : jid}
         data = urllib.urlencode(values)        
         response = urllib2.urlopen(self.url+'?'+data)
         return response.read()
@@ -40,6 +40,7 @@ class Connect() :
         #fix-this   
         with open('/home/hotsushi/game/ipoptemp/conff.json', 'w') as outfile:
             outfile.write(response)
+            
         
 
                                 

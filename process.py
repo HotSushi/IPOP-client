@@ -15,7 +15,7 @@ class IPOPProcess(QtCore.QObject):
         self.ipop_process = QProcess()
         self.controller_process = QProcess()
         self.ipop_kill_process = QProcess()
-        self.started = False
+        self.running = False
         self.makeConnections()
         
         
@@ -34,7 +34,7 @@ class IPOPProcess(QtCore.QObject):
         
     def start(self):
         self.startIPOP()
-        self.started = True    
+        self.running = True    
     
     def stop(self):
         self.stopIPOP()
@@ -47,12 +47,14 @@ class IPOPProcess(QtCore.QObject):
         self.controller_process.kill()
         self.controller_stopped.emit()
         self.stopped.emit()        
-        self.started = False
+        self.running = False
     
     def makeConnections(self):
         self.connect(self, SIGNAL("ipop_started()"), self.startGVPN)
         self.connect(self, SIGNAL("ipop_stopped()"), self.stopGVPN)
         
-    
+def init():
+    global ipopprocess
+    ipopprocess = IPOPProcess()   
     
     

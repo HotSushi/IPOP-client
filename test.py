@@ -3,6 +3,7 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import pyqtSignal
 from monitor import MonitorWidget
 from login import LoginWidget
+import process
 import urllib
 import json
 
@@ -48,7 +49,8 @@ def loggedin():
     loginapp.hide()
     
 def loggedout():
-    loginapp.stop()
+    process.ipopprocess.stop()
+    loginapp.setToLogin()
     loginapp.show()
     tabs.hide()
     
@@ -63,6 +65,7 @@ if __name__ == "__main__":
     loginapp = LoginWidget()
     loginapp.show()
     loginapp.started.connect(loggedin)
+    
     
     
     
