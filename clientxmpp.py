@@ -36,7 +36,13 @@ class ClientXmppBot(ClientXMPP):
     
     def send_key_server(self):
         self.send_message(mto = self.server_jid, mbody = 'register '+ self.jid + ' ' + self.pk)    
-                
+
+def init(jid, jp, s_jid, pk):
+    global instance
+    instance = ClientXmppBot(jid, jp, s_jid, pk)
+    instance.connect()
+    instance.process(block=False)               
+
 
 '''
 if __name__ == '__main__':

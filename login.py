@@ -3,7 +3,7 @@ from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *#pyqtSlot, SIGNAL, SLOT, QTimer
 from ui.login import Ui_Login
 from connect import Connect
-from clientxmpp import ClientXmppBot
+import clientxmpp
 import process
 import urllib
 
@@ -67,20 +67,10 @@ class LoginWidget(QtGui.QWidget):
     def registerKey(self):
         public_key = self.key.publickey().exportKey('PEM')
         #get this from the form
-        self.xmpp = ClientXmppBot( self.jid, self.jpassword, self.serverjid, public_key)
-        self.xmpp.connect()
-        self.xmpp.process(block=False)
-        self.xmpp.add_callback('received_key_ack', self.registerKeyCB)
-        self.xmpp.send_key_server()
-        
-    
-    #when key is succesfully registered     
-    def registerKeyCB(self):
-        #otherwise it would be called from non-qt thread
-        self.keyreg.emit()
-        self.xmpp.disconnect()
-              
-        
+        clientxmpp.init( self.jid, self.jpassword, self.serverjid, public_key)
+        #when key is succesfully registered emit 'keyreg' signal which will call 'getConfiguration()'     
+        clientxmpp.instance.add_callback('received_key_ack', self.keyreg.emit)
+        clientxmpp.instance.send_key_server()
         
     @pyqtSlot()
     def getConfiguration(self):
@@ -91,7 +81,7 @@ class LoginWidget(QtGui.QWidget):
         self.Connect.storeConfigData(data)
         
         self.changeProgress(50, "Configuration received")
-        self.setSingleShotTimer(self.startProcess)#Ipop)
+        self.setSingleShotTimer(self.startProcess)
         
     def startProcess(self):
         process.ipopprocess.start()
