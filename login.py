@@ -62,7 +62,7 @@ class LoginWidget(QtGui.QWidget):
         self.serverjid = self.Connect.getServerJid(self.jid)
         self.changeProgress(25, "Server XMPP ID received")
         self.setSingleShotTimer(self.registerKey)
-        #self.setSingleShotTimer(self.startProcess)#Ipop)
+        #self.setSingleShotTimer(self.startProcess)
         
     def registerKey(self):
         public_key = self.key.publickey().exportKey('PEM')

@@ -4,11 +4,14 @@ from PyQt4.QtCore import pyqtSignal
 from monitor import MonitorWidget
 from login import LoginWidget
 import process
+import clientxmpp
 import urllib
 import json
+from connect import Connect
 
 loginapp = ''
 tabs = ''
+connect = ''
 
 class TabWidget(QtGui.QTabWidget):
     stopped = pyqtSignal()
@@ -47,27 +50,29 @@ class TabWidget(QtGui.QTabWidget):
 def loggedin():
     tabs.show()
     loginapp.hide()
+    clientxmpp.instance.add_callback('stop_node',tabs.stopped.emit)
+    connect.setStatus('bob_sushant@xmpp.jp','running')
     
 def loggedout():
+    clientxmpp.instance.disconnect(wait=False)
+    connect.setStatus('bob_sushant@xmpp.jp','stopped')
     process.ipopprocess.stop()
     loginapp.setToLogin()
     loginapp.show()
     tabs.hide()
     
-        
+     
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
+    
+    connect = Connect()
+    connect.generateURL('127.0.0.1:8000')
     
     tabs = TabWidget()
     tabs.stopped.connect(loggedout)
     
-    #should return qprocess
     loginapp = LoginWidget()
     loginapp.show()
     loginapp.started.connect(loggedin)
-    
-    
-    
-    
     
     sys.exit(app.exec_())

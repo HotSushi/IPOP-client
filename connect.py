@@ -4,7 +4,7 @@ import json
         
 class Connect() : 
     def __init__(self) : 
-        self.baseurl = 'http://%s/IPOP/default/get'
+        self.baseurl = 'http://%s/IPOP/default'
         self.url = ''
                
         
@@ -27,13 +27,19 @@ class Connect() :
     def getConfigData(self, jid):
         values = {'type':'getjson','xmppid' : jid}
         data = urllib.urlencode(values)        
-        response = urllib2.urlopen(self.url+'?'+data)
+        response = urllib2.urlopen(self.url+'/get?'+data)
         return response.read()
         
     def getServerJid(self, jid):
         values = {'type':'getserverjid','xmppid' : jid}
         data = urllib.urlencode(values)        
-        response = urllib2.urlopen(self.url+'?'+data)
+        response = urllib2.urlopen(self.url+'/get?'+data)
+        return response.read()
+    
+    def setStatus(self, jid, stat):
+        values = {'type':'change_status', 'xmppid' : jid, 'status' : stat}
+        data = urllib.urlencode(values)        
+        response = urllib2.urlopen(self.url+'/set?'+data)
         return response.read()
         
     def storeConfigData(self, response):
