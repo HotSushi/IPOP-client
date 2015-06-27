@@ -1,6 +1,7 @@
 import urllib2
 import urllib
 import json
+import os
         
 class Connect() : 
     def __init__(self) : 
@@ -44,8 +45,9 @@ class Connect() :
         
     def storeConfigData(self, response):
         #fix-this   
-        with open('/home/hotsushi/game/ipoptemp/conff.json', 'w') as outfile:
+        with open(os.environ['WORKING_DIR']+'conff.json', 'w') as outfile:
             outfile.write(response)
+        
             
 def init():
     global instance, jid, jpassword, serverjid

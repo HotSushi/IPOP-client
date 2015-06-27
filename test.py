@@ -1,4 +1,5 @@
 import sys
+import os
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import pyqtSignal
 from monitor import MonitorWidget
@@ -30,14 +31,14 @@ class TabWidget(QtGui.QTabWidget):
         self.addTab(self.monitorapp,"Monitor")
         
         self.logapp = QtGui.QTextEdit()        
-        with open('/home/hotsushi/game/ipoptemp/ERROR.txt','r') as fi:
+        with open(os.environ['WORKING_DIR'] + 'ERROR.txt','r') as fi:
             self.logapp.setText(fi.read())
             self.logapp.setReadOnly(True)            
         self.addTab(self.logapp,"Log")
         
         self.info = QtGui.QLabel()
         info,out = '',''
-        with open('/home/hotsushi/game/ipoptemp/conff.json','r') as finfo:
+        with open(os.environ['WORKING_DIR'] + 'conff.json','r') as finfo:
             info = str(finfo.read())
         dic = json.loads(info)
         for key in sorted(dic.iterkeys()):
@@ -72,6 +73,8 @@ def loggedout():
      
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
+    
+    os.environ['WORKING_DIR'] = '/home/hotsushi/game/ipoptemp/'
     
     tabs = TabWidget()
     tabs.stopped.connect(loggedout)

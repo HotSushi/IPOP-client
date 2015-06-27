@@ -1,3 +1,4 @@
+import os
 from PyQt4 import QtCore
 from PyQt4.QtCore import pyqtSignal,pyqtSlot, SLOT, SIGNAL,QProcess
 
@@ -22,14 +23,14 @@ class IPOPProcess(QtCore.QObject):
         
         
     def startIPOP(self):
-        self.ipop_process.setWorkingDirectory("/home/hotsushi/game/ipoptemp/")
+        self.ipop_process.setWorkingDirectory(os.environ['WORKING_DIR'])
         self.ipop_process.start("gksudo", ['./script.sh']);
         self.ipop_process.readyRead.connect(self.ipop_started.emit)
     
     def startGVPN(self):
-        self.controller_process.setWorkingDirectory("/home/hotsushi/game/ipoptemp/")
-        self.controller_process.setStandardOutputFile('/home/hotsushi/game/ipoptemp/LOG.txt')
-        self.controller_process.setStandardErrorFile('/home/hotsushi/game/ipoptemp/ERROR.txt')
+        self.controller_process.setWorkingDirectory(os.environ['WORKING_DIR'])
+        self.controller_process.setStandardOutputFile(os.environ['WORKING_DIR'] + 'LOG.txt')
+        self.controller_process.setStandardErrorFile(os.environ['WORKING_DIR'] + 'ERROR.txt')
         self.controller_process.start("./gvpn_controller.py",['-c','conff.json']);
         self.controller_process.started.connect(self.controller_started.emit)
         self.controller_process.started.connect(self.started.emit)
