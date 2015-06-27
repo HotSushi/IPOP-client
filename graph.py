@@ -1,10 +1,11 @@
 from PyQt4 import QtGui
 from PyQt4.QtGui import QImage
 import urllib
+import connect
 
 class GangliaGraph() : 
     def __init__(self) : 
-        self.url = 'http://localhost/ganglia/graph.php?'
+        self.url = 'http://%s/ganglia/graph.php?'
         self.values = {
             'r' : 'hour',
             'z' : 'small',
@@ -32,8 +33,11 @@ class GangliaGraph() :
             }
         
         
-    def generateURL(self) : 
-        return self.url + urllib.urlencode(self.values)    
+    def generateURL(self) :
+        try: 
+            return self.url%(connect.adminip.split(':')[0]) + urllib.urlencode(self.values)    
+        except:
+            return self.url
     
     def setValues(self, duration, graphtype) : 
         self.values['r'] = self.durationMap[duration]
@@ -61,9 +65,12 @@ class GangliaGraph() :
     def getGraph(self, duration, graphtype) : 
         self.setValues(duration, graphtype)
         url = self.generateURL()
-        imgdata = urllib.urlopen(url).read()
-        image = QtGui.QImage()
-        image.loadFromData(imgdata)
+        try:
+            imgdata = urllib.urlopen(url).read()
+            image = QtGui.QImage()
+            image.loadFromData(imgdata)
+        except:
+            return QtGui.QImage()
         return image
                                 
          

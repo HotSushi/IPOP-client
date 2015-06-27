@@ -51,7 +51,8 @@ class LoginWidget(QtGui.QWidget):
         else:
             connect.jid = str(xmppTxtbox.displayText())
             connect.jpassword = str(xmppPwTxtbox.displayText())
-            connect.instance.generateURL(self.ui.hostipTxtbox.displayText())
+            connect.adminip = str(self.ui.hostipTxtbox.displayText())
+            connect.instance.generateURL(connect.adminip)
             if(not connect.instance.checkValid()):
                 self.changeStatus('Could not connect')
                 return
@@ -107,7 +108,7 @@ class LoginWidget(QtGui.QWidget):
 
         endidx = startidx + data[startidx:].find('\n')
 
-        hostip = self.ui.hostipTxtbox.displayText().split(':')[0]
+        hostip = connect.adminip.split(':')[0]
        
         newdata = data[:startidx+1] + " " + hostip + data[endidx:]
         with open('/etc/ganglia/gmond.conf','w') as f:
