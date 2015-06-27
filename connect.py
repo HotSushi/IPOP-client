@@ -14,7 +14,7 @@ class Connect() :
     
     def checkValid(self):
         try:
-            urllib2.urlopen(self.url)
+            urllib2.urlopen(self.url+'/creategvpn')
         except urllib2.HTTPError, e:
             print(e.code)
             return False
