@@ -21,6 +21,7 @@ class ClientXmppBot(ClientXMPP):
 
     # received_key_ack: upon key received by server
     # stop_node: server wants the node to shut down
+    # change_ip: server wants to change ip
     def add_callback(self, function_name, function_addr):
         self.msgcallback[function_name] = function_addr        
         
@@ -28,7 +29,6 @@ class ClientXmppBot(ClientXMPP):
     def message(self, msg):
         if msg['type'] in ('chat', 'normal'):
             msgs = msg['body'].split(' ',1)
-            print msgs
             
             if msgs[0] == 'get_key':
                 self.send_message(mto = self.server_jid, mbody = 'register '+ self.jid + ' ' + self.pk)
@@ -37,7 +37,10 @@ class ClientXmppBot(ClientXMPP):
                     self.msgcallback['received_key_ack']()
             elif msgs[0] == 'stop_node':
                 if 'stop_node' in self.msgcallback.keys():
-                    self.msgcallback['stop_node']()        
+                    self.msgcallback['stop_node']()
+            elif msgs[0] == 'change_ip':
+                if 'change_ip' in self.msgcallback.keys():
+                    self.msgcallback['change_ip']()
             else:
                 print "unformated msg",msgs
     

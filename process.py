@@ -10,6 +10,8 @@ class IPOPProcess(QtCore.QObject):
     started = pyqtSignal()
     stopped = pyqtSignal()
     
+    stop_this_inst = pyqtSignal()
+    
     def __init__(self):
         super(IPOPProcess, self).__init__()
         self.ipop_process = QProcess()
@@ -52,6 +54,7 @@ class IPOPProcess(QtCore.QObject):
     def makeConnections(self):
         self.connect(self, SIGNAL("ipop_started()"), self.startGVPN)
         self.connect(self, SIGNAL("ipop_stopped()"), self.stopGVPN)
+        self.connect(self, SIGNAL("stop_this_inst()"), self.stop)
         
 def init():
     global ipopprocess

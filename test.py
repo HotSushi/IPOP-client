@@ -15,9 +15,12 @@ connect = ''
 
 class TabWidget(QtGui.QTabWidget):
     stopped = pyqtSignal()
+    hide_signal = pyqtSignal()
     
     def __init__(self):
         super(TabWidget, self).__init__()
+        
+        self.hide_signal.connect(self.hide)
                 
         self.stop = QtGui.QPushButton()
         self.stop.setText("Stop Ipop")
@@ -44,6 +47,12 @@ class TabWidget(QtGui.QTabWidget):
         self.info.setText(out)
         self.addTab(self.info,"Info")        
                   
+def changeIpCallback():
+    # alternative to process.ipopprocess.stop()
+    process.ipopprocess.stop_this_inst.emit()
+    tabs.hide_signal.emit()
+    loginapp.show_signal.emit()
+    loginapp.keyreg.emit()
         
         
         
@@ -51,6 +60,7 @@ def loggedin():
     tabs.show()
     loginapp.hide()
     clientxmpp.instance.add_callback('stop_node',tabs.stopped.emit)
+    clientxmpp.instance.add_callback('change_ip',changeIpCallback)
     connect.setStatus('bob_sushant@xmpp.jp','running')
     
 def loggedout():
