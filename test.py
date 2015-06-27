@@ -7,11 +7,9 @@ import process
 import clientxmpp
 import urllib
 import json
-from connect import Connect
+import connect
 
-loginapp = ''
-tabs = ''
-connect = ''
+global loginapp,tabs
 
 class TabWidget(QtGui.QTabWidget):
     stopped = pyqtSignal()
@@ -61,11 +59,11 @@ def loggedin():
     loginapp.hide()
     clientxmpp.instance.add_callback('stop_node',tabs.stopped.emit)
     clientxmpp.instance.add_callback('change_ip',changeIpCallback)
-    connect.setStatus('bob_sushant@xmpp.jp','running')
+    connect.instance.setStatus(connect.jid,'running')
     
 def loggedout():
     clientxmpp.instance.disconnect(wait=False)
-    connect.setStatus('bob_sushant@xmpp.jp','stopped')
+    connect.instance.setStatus(connect.jid,'stopped')
     process.ipopprocess.stop()
     loginapp.setToLogin()
     loginapp.show()
@@ -74,9 +72,6 @@ def loggedout():
      
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
-    
-    connect = Connect()
-    connect.generateURL('127.0.0.1:8000')
     
     tabs = TabWidget()
     tabs.stopped.connect(loggedout)

@@ -2,7 +2,7 @@ import sys
 from PyQt4 import QtCore, QtGui
 from PyQt4.QtCore import *#pyqtSlot, SIGNAL, SLOT, QTimer
 from ui.login import Ui_Login
-from connect import Connect
+import connect
 import clientxmpp
 import process
 import urllib
@@ -27,9 +27,9 @@ class LoginWidget(QtGui.QWidget):
         self.ui.Progresswidget.setLayout(self.ui.progressLayout)
         
         process.init()
+        connect.init()
         
         self.connectSignals()
-        self.Connect = Connect()
         self.jid = ""
         
         self.ui.hostipTxtbox.setText("127.0.0.1:8000")
@@ -49,10 +49,10 @@ class LoginWidget(QtGui.QWidget):
             #feature: check if valid Jid
             self.changeStatus('Enter XMPP ID and password')
         else:
-            self.jid = str(xmppTxtbox.displayText())
-            self.jpassword = str(xmppPwTxtbox.displayText())
-            self.Connect.generateURL(self.ui.hostipTxtbox.displayText())
-            if(not self.Connect.checkValid()):
+            connect.jid = str(xmppTxtbox.displayText())
+            connect.jpassword = str(xmppPwTxtbox.displayText())
+            connect.instance.generateURL(self.ui.hostipTxtbox.displayText())
+            if(not connect.instance.checkValid()):
                 self.changeStatus('Could not connect')
                 return
             self.ui.loginStackedWidget.setCurrentIndex(1)
@@ -60,7 +60,7 @@ class LoginWidget(QtGui.QWidget):
             self.setSingleShotTimer(self.getServerJid)
             
     def getServerJid(self):
-        self.serverjid = self.Connect.getServerJid(self.jid)
+        self.serverjid = connect.instance.getServerJid(connect.jid)
         self.changeProgress(25, "Server XMPP ID received")
         self.setSingleShotTimer(self.registerKey)
         #self.setSingleShotTimer(self.startProcess)
@@ -69,7 +69,7 @@ class LoginWidget(QtGui.QWidget):
         public_key = self.key.publickey().exportKey('PEM')
         #get this from the form
         try:
-            clientxmpp.init( self.jid, self.jpassword, self.serverjid, public_key)
+            clientxmpp.init( connect.jid, connect.jpassword, self.serverjid, public_key)
         except IOError as err:
             self.changeStatus(str(err))
             self.setToLogin()        
@@ -85,9 +85,9 @@ class LoginWidget(QtGui.QWidget):
     
         self.changeProgress(35, "Key registered")       
         
-        enc_data = self.Connect.getConfigData(self.jid)
+        enc_data = connect.instance.getConfigData(connect.jid)
         data = self.key.decrypt(enc_data)
-        self.Connect.storeConfigData(data)
+        connect.instance.storeConfigData(data)
         
         self.changeProgress(50, "Configuration received")
         self.setSingleShotTimer(self.startProcess)

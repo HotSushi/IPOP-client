@@ -47,8 +47,10 @@ class Connect() :
         with open('/home/hotsushi/game/ipoptemp/conff.json', 'w') as outfile:
             outfile.write(response)
             
-        
-
+def init():
+    global instance, jid, jpassword, serverjid
+    instance = Connect()
+    
                                 
          
 
