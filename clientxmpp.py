@@ -51,7 +51,8 @@ class ClientXmppBot(ClientXMPP):
 def init(jid, jp, s_jid, pk):
     global instance
     instance = ClientXmppBot(jid, jp, s_jid, pk)
-    instance.connect()
+    if not instance.connect(reattempt=False):
+        raise IOError('Could not connect to xmpp server')    
     instance.process(block=False)               
 
 
