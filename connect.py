@@ -52,7 +52,7 @@ class Connect() :
         
             
 def init():
-    global instance, jid, jpassword, serverjid
+    global instance, jid, jpassword, serverjid, adminip
     instance = Connect()
     
                                 

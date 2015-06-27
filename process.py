@@ -24,7 +24,7 @@ class IPOPProcess(QtCore.QObject):
         
     def startIPOP(self):
         self.ipop_process.setWorkingDirectory(os.environ['WORKING_DIR'])
-        self.ipop_process.start("gksudo", ['./script.sh']);
+        self.ipop_process.start("sudo", ['./script.sh']);
         self.ipop_process.readyRead.connect(self.ipop_started.emit)
     
     def startGVPN(self):
@@ -43,7 +43,7 @@ class IPOPProcess(QtCore.QObject):
         self.stopIPOP()
     
     def stopIPOP(self):
-        self.ipop_kill_process.start("gksudo",['pkill','ipop-tincan-x86'])
+        self.ipop_kill_process.start("sudo",['pkill','ipop-tincan-x86'])
         self.ipop_kill_process.finished.connect(self.ipop_stopped.emit)
     
     def stopGVPN(self):
