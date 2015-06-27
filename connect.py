@@ -44,9 +44,11 @@ class Connect() :
         return response.read()
         
     def storeConfigData(self, response):
-        #fix-this   
+        dic = json.loads(response)
+        dic ["ganglia_stat"] = "True"
+        dic ["ganglia_path"] = os.environ['GANGLIA_DIR']
         with open(os.environ['WORKING_DIR']+'conff.json', 'w') as outfile:
-            outfile.write(response)
+            outfile.write(json.dumps(dic))
         
             
 def init():

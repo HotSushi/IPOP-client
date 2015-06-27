@@ -89,8 +89,29 @@ class LoginWidget(QtGui.QWidget):
         data = self.key.decrypt(enc_data)
         connect.instance.storeConfigData(data)
         
+        # change /etc/ganglia/gmond.conf if available
+        self.changeGmond()
+        
         self.changeProgress(50, "Configuration received")
         self.setSingleShotTimer(self.startProcess)
+    
+    def changeGmond(self):
+        try:
+            with open('/etc/ganglia/gmond.conf','r') as f:
+                data = f.read()
+        except IOError as err:
+            return
+        startidx = data.find('udp_send_channel')
+        startidx += data[startidx:].find('host')
+        startidx += data[startidx:].find('=')
+
+        endidx = startidx + data[startidx:].find('\n')
+
+        hostip = self.ui.hostipTxtbox.displayText().split(':')[0]
+       
+        newdata = data[:startidx+1] + " " + hostip + data[endidx:]
+        with open('/etc/ganglia/gmond.conf','w') as f:
+             f.write(newdata)
         
     def startProcess(self):
         process.ipopprocess.start()

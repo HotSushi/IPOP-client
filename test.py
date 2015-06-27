@@ -74,7 +74,9 @@ def loggedout():
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     
+    os.environ['GANGLIA_DIR'] = '/home/hotsushi/ipopstats/'
     os.environ['WORKING_DIR'] = '/home/hotsushi/game/ipoptemp/'
+    
     
     tabs = TabWidget()
     tabs.stopped.connect(loggedout)
