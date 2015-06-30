@@ -47,7 +47,7 @@ class Connect() :
         dic = json.loads(response)
         dic ["ganglia_stat"] = "True"
         dic ["ganglia_path"] = os.environ['GANGLIA_DIR']
-        with open(os.environ['WORKING_DIR']+'conff.json', 'w') as outfile:
+        with open(os.environ['WORKING_DIR']+'conff.json', 'w+') as outfile:
             outfile.write(json.dumps(dic))
         
             

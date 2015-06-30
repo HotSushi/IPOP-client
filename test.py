@@ -1,7 +1,7 @@
 import sys
 import os
 from PyQt4 import QtCore, QtGui
-from PyQt4.QtCore import pyqtSignal
+from PyQt4.QtCore import pyqtSignal,QTimer
 from monitor import MonitorWidget
 from login import LoginWidget
 import process
@@ -30,21 +30,36 @@ class TabWidget(QtGui.QTabWidget):
         self.monitorapp = MonitorWidget()
         self.addTab(self.monitorapp,"Monitor")
         
-        self.logapp = QtGui.QTextEdit()        
-        with open(os.environ['WORKING_DIR'] + 'ERROR.txt','r+') as fi:
-            self.logapp.setText(fi.read())
-            self.logapp.setReadOnly(True)            
+        self.logapp = QtGui.QTextEdit()       
         self.addTab(self.logapp,"Log")
-        
+
         self.info = QtGui.QLabel()
+        self.addTab(self.info,"Info")
+        
+        self.log_timer = QTimer() 
+        self.log_timer.timeout.connect(self.reloadLogs)
+        self.log_timer.start(3000)
+        
+    def reloadLogs(self):
+        try:        
+            with open(os.environ['WORKING_DIR'] + 'ERROR.txt','r') as fi:
+                self.logapp.setText(fi.read())
+                self.logapp.setReadOnly(True)            
+        except IOError:
+            return
+            pass
+            
         info,out = '',''
-        with open(os.environ['WORKING_DIR'] + 'conff.json','r+') as finfo:
-            info = str(finfo.read())
-        dic = json.loads(info)
-        for key in sorted(dic.iterkeys()):
-            out = out + key +":"+ str(dic[key]) + '\n'
-        self.info.setText(out)
-        self.addTab(self.info,"Info")        
+        try:
+            with open(os.environ['WORKING_DIR'] + 'conff.json','r') as finfo:
+                info = str(finfo.read())
+            dic = json.loads(info)
+            for key in sorted(dic.iterkeys()):
+                out = out + key +":"+ str(dic[key]) + '\n'
+            self.info.setText(out)
+        except:
+            pass
+                
                   
 def changeIpCallback():
     # alternative to process.ipopprocess.stop()
@@ -74,8 +89,16 @@ def loggedout():
 if __name__ == "__main__":
     app = QtGui.QApplication(sys.argv)
     
-    os.environ['GANGLIA_DIR'] = '/home/hotsushi/ipopstats/'
-    os.environ['WORKING_DIR'] = '/home/hotsushi/game/ipoptemp/'
+    try:
+        config = json.load(open('config.json','r'))
+        os.environ['GANGLIA_DIR'] = config['ganglia_path']
+        os.environ['WORKING_DIR'] = config['working_path']
+    except IOError:
+        print 'config.json file not created'
+        exit()
+    except KeyError:
+        print 'corrupt config.json file'
+        exit()       
     
     
     tabs = TabWidget()
