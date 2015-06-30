@@ -37,7 +37,18 @@ download gvpn+ipop executable from here [minimal_gvpn.tar.gz](https://drive.goog
 
 Extract this to a directory, say `home/user/ipop`
 
-Make another directory where ipop can dump ganglia stats into, say 'home/user/ipopstats' 
+Make another directory where ipop can dump ganglia stats into, say `home/user/ipopstats`
+
+Do this step only if your system is 32 bit: Go into extracted `home/user/ipop` directory, open script.sh, and change `sudo ./ipop-tincan-x86_64 1> out.log 2> err.log &` to `sudo ./ipop-tincan-x86 1> out.log 2> err.log &`
+
+Move to `IPOP-client` directory and edit `config.json` file to reflect where ipop executable is and ganglia stats destination is
+`IPOP-client/config.json`
+```
+{
+"ganglia_path":"/home/user/ipopstats",
+"working_path":"/home/user/ipop"
+}
+```
 
 
 
