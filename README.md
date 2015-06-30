@@ -33,4 +33,11 @@ pyuic4 ui/login.ui > ui/login.py
 pyuic4 ui/monitor.ui > ui/monitor.py
 ```
 
+download gvpn+ipop executable from here [minimal_gvpn.tar.gz](https://drive.google.com/file/d/0Bxr9CriT1DIuZ0lWRXZhd3hpbTA/view?usp=sharing)
+
+Extract this to a directory, say `home/user/ipop`
+
+Make another directory where ipop can dump ganglia stats into, say 'home/user/ipopstats' 
+
+
 
