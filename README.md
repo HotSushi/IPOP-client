@@ -42,13 +42,23 @@ Make another directory where ipop can dump ganglia stats into, say `home/user/ip
 Do this step only if your system is 32 bit: Go into extracted `home/user/ipop` directory, open script.sh, and change `sudo ./ipop-tincan-x86_64 1> out.log 2> err.log &` to `sudo ./ipop-tincan-x86 1> out.log 2> err.log &`
 
 Move to `IPOP-client` directory and edit `config.json` file to reflect where ipop executable is and ganglia stats destination is
+
 `IPOP-client/config.json`
 ```
 {
-"ganglia_path":"/home/user/ipopstats",
-"working_path":"/home/user/ipop"
+"ganglia_path":"/home/user/ipopstats/",
+"working_path":"/home/user/ipop/"
 }
 ```
 
+All done! next run the following command to launch (run with `sudo` if you want to avoid root password dialog)
 
+```
+python launcher.py
+```
+
+Note! you can only login if you can connect to the server
+
+You can check the status of the node by running
+`./home/user/ipop/test.sh`
 
