@@ -4,13 +4,12 @@ from sleekxmpp.exceptions import IqError, IqTimeout
 
 class ClientXmppBot(ClientXMPP):
 
-    def __init__(self, jid, password, server_jid, public_key):
+    def __init__(self, jid, password, server_jid):
         ClientXMPP.__init__(self, jid, password)
 
         self.add_event_handler("session_start", self.session_start)
         self.add_event_handler("message", self.message)
         self.server_jid = server_jid
-        self.pk = public_key
         self.msgcallback = {}
         
         
@@ -43,14 +42,10 @@ class ClientXmppBot(ClientXMPP):
                     self.msgcallback['change_ip']()
             else:
                 print "unformated msg",msgs
-    
-    def send_key_server(self):
-        self.send_message(mto = self.server_jid, mbody = 'register '+ self.jid + ' ' + self.pk) 
-      
 
-def init(jid, jp, s_jid, pk):
+def init(jid, jp, s_jid):
     global instance
-    instance = ClientXmppBot(jid, jp, s_jid, pk)
+    instance = ClientXmppBot(jid, jp, s_jid)
     if not instance.connect(reattempt=False):
         raise IOError('Could not connect to xmpp server')    
     instance.process(block=False)               

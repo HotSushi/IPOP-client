@@ -70,14 +70,14 @@ class LoginWidget(QtGui.QWidget):
         public_key = self.key.publickey().exportKey('PEM')
         #get this from the form
         try:
-            clientxmpp.init( connect.jid, connect.jpassword, self.serverjid, public_key)
+            clientxmpp.init( connect.jid, connect.jpassword, self.serverjid)
         except IOError as err:
             self.changeStatus(str(err))
             self.setToLogin()        
                         
         #when key is succesfully registered emit 'keyreg' signal which will call 'getConfiguration()'     
-        clientxmpp.instance.add_callback('received_key_ack', self.keyreg.emit)
-        clientxmpp.instance.send_key_server()
+        connect.instance.setPublicKey( connect.jid, public_key)
+        self.keyreg.emit()
         
     @pyqtSlot()
     def getConfiguration(self):

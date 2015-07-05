@@ -43,6 +43,13 @@ class Connect() :
         response = urllib2.urlopen(self.url+'/set?'+data)
         return response.read()
         
+    def setPublicKey(self, jid, PK):
+        values = {'type':'set_public_key','xmppid' : jid, 'public_key':PK}
+        data = urllib.urlencode(values)        
+        response = urllib2.urlopen(self.url+'/set?'+data)
+        return response.read()
+    
+        
     def storeConfigData(self, response):
         dic = json.loads(response)
         dic ["ganglia_stat"] = "True"
