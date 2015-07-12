@@ -33,7 +33,7 @@ pyuic4 ui/login.ui > ui/login.py
 pyuic4 ui/monitor.ui > ui/monitor.py
 ```
 
-download gvpn+ipop executable from here [minimal_gvpn.tar.gz](https://drive.google.com/file/d/0Bxr9CriT1DIuZ0lWRXZhd3hpbTA/view?usp=sharing)
+download gvpn+ipop executable from here [ipop_ubuntu14_ui.tar.gz](https://drive.google.com/file/d/0Bxr9CriT1DIuQVR3ZGxYM0VCX1E/view?usp=sharing)
 
 Extract this to a directory, say `home/user/ipop`
 
