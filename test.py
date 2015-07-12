@@ -42,7 +42,7 @@ class TabWidget(QtGui.QTabWidget):
         
     def reloadLogs(self):
         try:        
-            with open(os.environ['WORKING_DIR'] + 'ERROR.txt','r') as fi:
+            with open(os.environ['WORKING_DIR'] + 'gvpn.log','r') as fi:
                 self.logapp.setText(fi.read())
                 self.logapp.setReadOnly(True)            
         except IOError:

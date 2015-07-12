@@ -49,11 +49,19 @@ class Connect() :
         response = urllib2.urlopen(self.url+'/set?'+data)
         return response.read()
     
+    def setLog(self,logname,logdata):
+        values = {'type':'set','node':jid,'name':logname,'log':logdata}
+        data = urllib.urlencode(values)        
+        print self.url+'/log?'+data
+        response = urllib2.urlopen(self.url+'/log?'+data)
+        return response.read()
         
     def storeConfigData(self, response):
         dic = json.loads(response)
         dic ["ganglia_stat"] = "True"
         dic ["ganglia_path"] = os.environ['GANGLIA_DIR']
+        dic ["tincan_logging"] = 2
+
         with open(os.environ['WORKING_DIR']+'conff.json', 'w+') as outfile:
             outfile.write(json.dumps(dic))
         

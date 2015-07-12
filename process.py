@@ -1,6 +1,7 @@
 import os
 from PyQt4 import QtCore
 from PyQt4.QtCore import pyqtSignal,pyqtSlot, SLOT, SIGNAL,QProcess
+from log import LogUpdater
 
 class IPOPProcess(QtCore.QObject):
     #Signals
@@ -26,14 +27,17 @@ class IPOPProcess(QtCore.QObject):
         self.ipop_process.setWorkingDirectory(os.environ['WORKING_DIR'])
         self.ipop_process.start("sudo", ['./script.sh']);
         self.ipop_process.readyRead.connect(self.ipop_started.emit)
-    
+        self.ipoplogupdater = LogUpdater('ipop.log',60)
+        
     def startGVPN(self):
         self.controller_process.setWorkingDirectory(os.environ['WORKING_DIR'])
-        self.controller_process.setStandardOutputFile(os.environ['WORKING_DIR'] + 'LOG.txt')
-        self.controller_process.setStandardErrorFile(os.environ['WORKING_DIR'] + 'ERROR.txt')
+        #self.controller_process.setStandardOutputFile(os.environ['WORKING_DIR'] + 'LOG.txt')
+        self.controller_process.setStandardErrorFile(os.environ['WORKING_DIR'] + 'gvpn.log')
         self.controller_process.start("./gvpn_controller.py",['-c','conff.json']);
         self.controller_process.started.connect(self.controller_started.emit)
         self.controller_process.started.connect(self.started.emit)
+        self.gvpnlogupdater = LogUpdater('gvpn.log',60)
+    
         
     def start(self):
         self.startIPOP()
@@ -44,11 +48,13 @@ class IPOPProcess(QtCore.QObject):
     
     def stopIPOP(self):
         self.ipop_kill_process.start("sudo",['pkill','ipop-tincan-x86'])
+        del self.ipoplogupdater
         self.ipop_kill_process.finished.connect(self.ipop_stopped.emit)
     
     def stopGVPN(self):
         self.controller_process.kill()
         self.controller_stopped.emit()
+        del self.gvpnlogupdater
         self.stopped.emit()        
         self.running = False
     
