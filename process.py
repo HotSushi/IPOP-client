@@ -1,8 +1,11 @@
 import os
 from PyQt4 import QtCore
-from PyQt4.QtCore import pyqtSignal,pyqtSlot, SLOT, SIGNAL,QProcess
+from PyQt4.QtCore import pyqtSignal,pyqtSlot, SLOT, SIGNAL,QProcess,QTimer
 from log import LogUpdater
-
+import connect
+#time in seconds
+HEARTBEAT_CYCLE = 8
+    
 class IPOPProcess(QtCore.QObject):
     #Signals
     ipop_started = pyqtSignal()
@@ -11,7 +14,6 @@ class IPOPProcess(QtCore.QObject):
     controller_stopped = pyqtSignal()
     started = pyqtSignal()
     stopped = pyqtSignal()
-    
     stop_this_inst = pyqtSignal()
     
     def __init__(self):
@@ -21,7 +23,8 @@ class IPOPProcess(QtCore.QObject):
         self.ipop_kill_process = QProcess()
         self.running = False
         self.makeConnections()
-        
+        self.heartbeat = QTimer()
+        self.heartbeat.timeout.connect(self.beat)
         
     def startIPOP(self):
         self.ipop_process.setWorkingDirectory(os.environ['WORKING_DIR'])
@@ -37,6 +40,10 @@ class IPOPProcess(QtCore.QObject):
         self.controller_process.started.connect(self.controller_started.emit)
         self.controller_process.started.connect(self.started.emit)
         self.gvpnlogupdater = LogUpdater('gvpn.log',60)
+        self.heartbeat.start(HEARTBEAT_CYCLE)
+
+    def beat(self):
+        connect.instance.setStatus(connect.jid,'running')
     
         
     def start(self):
@@ -57,6 +64,7 @@ class IPOPProcess(QtCore.QObject):
         del self.gvpnlogupdater
         self.stopped.emit()        
         self.running = False
+        self.heartbeat.stop()
     
     def makeConnections(self):
         self.connect(self, SIGNAL("ipop_started()"), self.startGVPN)
