@@ -4,6 +4,7 @@ import connect
 import os
 import time
 
+KB_5 = 5 * (2**10)
 class LogUpdater():
 
     def __init__(self,filename,time_in_seconds):
@@ -27,7 +28,11 @@ class LogUpdater():
         with open(os.environ['WORKING_DIR'] +self.filename,'r') as gl:
             DATA = gl.read()
             gl.close()
-        NDATA = DATA[self.PDATA:]
+        #if data to be sent is greater than 5 KB, then send last 5 KB
+        if len(DATA)-self.PDATA > KB_5:
+            NDATA = DATA[-KB_5:]
+        else:
+            NDATA = DATA[self.PDATA:]
         self.PDATA = len(DATA)
         if not NDATA:
             return False
