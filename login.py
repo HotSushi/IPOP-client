@@ -13,7 +13,6 @@ from Crypto import Random
 
 class LoginWidget(QtGui.QWidget):
     #Signals
-    keyreg = pyqtSignal()
     started = pyqtSignal()
     show_signal = pyqtSignal()
     
@@ -68,22 +67,14 @@ class LoginWidget(QtGui.QWidget):
         #self.setSingleShotTimer(self.startProcess)
         
     def registerKey(self):
-        public_key = self.key.publickey().exportKey('PEM')
-        #get this from the form
-        try:
-            clientxmpp.init( connect.jid, connect.jpassword, self.serverjid)
-        except IOError as err:
-            self.changeStatus(str(err))
-            self.setToLogin()
-            return       
+        public_key = self.key.publickey().exportKey('PEM')      
                         
         #when key is succesfully registered emit 'keyreg' signal which will call 'getConfiguration()'     
         connect.instance.setPublicKey( connect.jid, public_key)
-        self.keyreg.emit()
+        self.setSingleShotTimer(self.getConfiguration)
         
-    @pyqtSlot()
     def getConfiguration(self):
-        self.disconnect(process.ipopprocess,SIGNAL('stopped()'),self.keyreg.emit)
+        #self.disconnect(process.ipopprocess,SIGNAL('stopped()'),self.keyreg.emit)
         
     
         self.changeProgress(35, "Key registered")       
@@ -96,8 +87,19 @@ class LoginWidget(QtGui.QWidget):
         self.changeGmond()
         
         self.changeProgress(50, "Configuration received")
-        self.setSingleShotTimer(self.startProcess)
+        self.setSingleShotTimer(self.startClientXMPP)
     
+    def startClientXMPP(self):
+        #get this from the form
+        try:
+            clientxmpp.init( connect.jid, connect.jpassword, self.serverjid, connect.instance.getLocalConfigData('xmpp_host'))
+        except IOError as err:
+            self.changeStatus(str(err))
+            self.setToLogin()
+            return
+        self.changeProgress(70, "Starting Client XMPP")
+        self.setSingleShotTimer(self.startProcess)
+
     def changeGmond(self):
         try:
             with open('/etc/ganglia/gmond.conf','r') as f:
@@ -133,7 +135,6 @@ class LoginWidget(QtGui.QWidget):
         connectBtn = self.ui.connectBtn
         connectBtn.connect( connectBtn, SIGNAL("clicked()"), self.changeView )
         self.connect(process.ipopprocess, SIGNAL("controller_started()"), self.started.emit)
-        self.keyreg.connect(self.getConfiguration)
         self.show_signal.connect(self.show)
 
 

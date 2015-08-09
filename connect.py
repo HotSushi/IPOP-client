@@ -64,12 +64,7 @@ class Connect() :
         dic ["ganglia_stat"] = "True"
         dic ["ganglia_path"] = os.environ['GANGLIA_DIR']
         dic ["tincan_logging"] = 2
-        #check if url or ip:port
-        xmpp_host = dic["xmpp_host"]
-        if not xmpp_host.isalpha():
-            #if just ip, append with default port 
-            if ':' not in xmpp_host:
-                dic["xmpp_host"] = xmpp_host + ':5280'
+        dic ["nick"] = dic["xmpp_username"].split('@')[0]
 
         self.config = dic
         with open(os.environ['WORKING_DIR']+'conff.json', 'w+') as outfile:

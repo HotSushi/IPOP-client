@@ -43,11 +43,29 @@ class ClientXmppBot(ClientXMPP):
             else:
                 print "unformated msg",msgs
 
-def init(jid, jp, s_jid):
+def init(jid, jp, s_jid, x_host):
     global instance
     instance = ClientXmppBot(jid, jp, s_jid)
-    if not instance.connect(reattempt=False):
-        raise IOError('Could not connect to xmpp server')    
+    
+    #if any character in x_host is alpha
+    is_ip = True
+    for c in x_host:
+        if c.isalpha():
+            is_ip = False
+            break
+
+    if not is_ip:
+        if not instance.connect(reattempt=False):
+            raise IOError('Could not connect to xmpp server')
+    else:
+        #create tuple (xmpp_host_ip,port)  ,default ejabberd port = 5280 
+        if ':' in x_host:
+            x_host_tuple = tuple(x_host.split(':'))
+        else:
+            x_host_tuple = (x_host,'5280')
+
+        if not instance.connect(address=x_host_tuple, reattempt=False):
+            raise IOError('Could not connect to xmpp server')    
     instance.process(block=False)               
 
 
