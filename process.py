@@ -16,6 +16,8 @@ class IPOPProcess(QtCore.QObject):
     stopped = pyqtSignal()
     stop_this_inst = pyqtSignal()
     
+    is_admingvpn = False
+
     def __init__(self):
         super(IPOPProcess, self).__init__()
         self.ipop_process = QProcess()
@@ -36,7 +38,10 @@ class IPOPProcess(QtCore.QObject):
         self.controller_process.setWorkingDirectory(os.environ['WORKING_DIR'])
         #self.controller_process.setStandardOutputFile(os.environ['WORKING_DIR'] + 'LOG.txt')
         self.controller_process.setStandardErrorFile(os.environ['WORKING_DIR'] + 'gvpn.log')
-        self.controller_process.start("./gvpn_controller.py",['-c','conff.json']);
+        if self.is_admingvpn:
+            self.controller_process.start("./admin_gvpn.py",['-c','conff.json']);
+        else:
+            self.controller_process.start("./gvpn_controller.py",['-c','conff.json']);
         self.controller_process.started.connect(self.controller_started.emit)
         self.controller_process.started.connect(self.started.emit)
         self.gvpnlogupdater = LogUpdater('gvpn.log',60)
@@ -65,6 +70,9 @@ class IPOPProcess(QtCore.QObject):
         self.stopped.emit()        
         self.running = False
         self.heartbeat.stop()
+
+    def setAdminGVPN(self, is_admingvpn = False):
+        self.is_admingvpn = is_admingvpn
     
     def makeConnections(self):
         self.connect(self, SIGNAL("ipop_started()"), self.startGVPN)

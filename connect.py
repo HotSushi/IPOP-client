@@ -3,11 +3,11 @@ import urllib
 import json
 import os
         
-class Connect() : 
+class Connect() :
     def __init__(self) : 
         self.baseurl = 'http://%s/IPOP/default'
         self.url = ''
-               
+        self.config = {}            
         
     def generateURL(self, host) : 
         self.url = self.baseurl%(host)
@@ -55,13 +55,23 @@ class Connect() :
         print self.url+'/log?'+data
         response = urllib2.urlopen(self.url+'/log?'+data)
         return response.read()
-        
+    
+    def getLocalConfigData(self, key):
+        return self.config[key]
+
     def storeConfigData(self, response):
         dic = json.loads(response)
         dic ["ganglia_stat"] = "True"
         dic ["ganglia_path"] = os.environ['GANGLIA_DIR']
         dic ["tincan_logging"] = 2
+        #check if url or ip:port
+        xmpp_host = dic["xmpp_host"]
+        if not xmpp_host.isalpha():
+            #if just ip, append with default port 
+            if ':' not in xmpp_host:
+                dic["xmpp_host"] = xmpp_host + ':5280'
 
+        self.config = dic
         with open(os.environ['WORKING_DIR']+'conff.json', 'w+') as outfile:
             outfile.write(json.dumps(dic))
         

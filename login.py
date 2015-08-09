@@ -6,6 +6,7 @@ import connect
 import clientxmpp
 import process
 import urllib
+import json
 
 from Crypto.PublicKey import RSA
 from Crypto import Random
@@ -73,7 +74,8 @@ class LoginWidget(QtGui.QWidget):
             clientxmpp.init( connect.jid, connect.jpassword, self.serverjid)
         except IOError as err:
             self.changeStatus(str(err))
-            self.setToLogin()        
+            self.setToLogin()
+            return       
                         
         #when key is succesfully registered emit 'keyreg' signal which will call 'getConfiguration()'     
         connect.instance.setPublicKey( connect.jid, public_key)
@@ -115,6 +117,7 @@ class LoginWidget(QtGui.QWidget):
              f.write(newdata)
         
     def startProcess(self):
+        process.ipopprocess.setAdminGVPN(connect.instance.getLocalConfigData('is_admingvpn') == 'yes')
         process.ipopprocess.start()
     
     def setToLogin(self):
