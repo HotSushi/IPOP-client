@@ -43,6 +43,7 @@ class ClientXmppBot(ClientXMPP):
             else:
                 print "unformated msg",msgs
 
+#FIX-THIS wrong password
 def init(jid, jp, s_jid, x_host):
     global instance
     instance = ClientXmppBot(jid, jp, s_jid)
