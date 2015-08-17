@@ -66,7 +66,10 @@ class IPOPProcess(QtCore.QObject):
     def stopGVPN(self):
         self.controller_process.kill()
         self.controller_stopped.emit()
-        del self.gvpnlogupdater
+        try:
+            del self.gvpnlogupdater
+        except AttributeError:
+            pass  # gives out error while restarting IPOP due to changed IP
         self.stopped.emit()        
         self.running = False
         self.heartbeat.stop()

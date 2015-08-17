@@ -15,6 +15,7 @@ class LoginWidget(QtGui.QWidget):
     #Signals
     started = pyqtSignal()
     show_signal = pyqtSignal()
+    keyreg = pyqtSignal()
     
     # add layouts
     def __init__(self):
@@ -74,7 +75,7 @@ class LoginWidget(QtGui.QWidget):
         self.setSingleShotTimer(self.getConfiguration)
         
     def getConfiguration(self):
-        #self.disconnect(process.ipopprocess,SIGNAL('stopped()'),self.keyreg.emit)
+        self.disconnect(process.ipopprocess,SIGNAL('stopped()'),self.keyreg.emit)
         
     
         self.changeProgress(35, "Key registered")       
@@ -135,6 +136,7 @@ class LoginWidget(QtGui.QWidget):
         connectBtn = self.ui.connectBtn
         connectBtn.connect( connectBtn, SIGNAL("clicked()"), self.changeView )
         self.connect(process.ipopprocess, SIGNAL("controller_started()"), self.started.emit)
+        self.keyreg.connect(self.getConfiguration)
         self.show_signal.connect(self.show)
 
 
