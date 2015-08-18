@@ -52,7 +52,6 @@ class Connect() :
     def setLog(self,logname,logdata):
         values = {'type':'set','node':jid,'name':logname,'log':logdata}
         data = urllib.urlencode(values)        
-        print self.url+'/log?'+data
         response = urllib2.urlopen(self.url+'/log?'+data)
         return response.read()
     
