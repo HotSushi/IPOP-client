@@ -65,7 +65,14 @@ class LoginWidget(QtGui.QWidget):
             self.setSingleShotTimer(self.getServerJid)
             
     def getServerJid(self):
-        self.serverjid = connect.instance.getServerJid(connect.jid)
+        # if the server doesnt respond
+        try:
+            self.serverjid = connect.instance.getServerJid(connect.jid)
+        except:
+            self.changeStatus("Server couldn\'t find the JID")
+            self.setToLogin()
+            return
+
         self.changeProgress(25, "Server XMPP ID received")
         self.setSingleShotTimer(self.registerKey)
         #self.setSingleShotTimer(self.startProcess)
@@ -123,6 +130,8 @@ class LoginWidget(QtGui.QWidget):
              f.write(newdata)
         
     def startProcess(self):
+        self.changeStatus(" ")
+
         process.ipopprocess.setAdminGVPN(connect.instance.getLocalConfigData('is_admingvpn') == 'yes')
         process.ipopprocess.start()
     
