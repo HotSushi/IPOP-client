@@ -63,7 +63,7 @@ def init(jid, jp, s_jid, x_host):
         if ':' in x_host:
             x_host_tuple = tuple(x_host.split(':'))
         else:
-            x_host_tuple = (x_host,'5280')
+            x_host_tuple = (x_host,'5222')
 
         if not instance.connect(address=x_host_tuple, reattempt=False):
             raise IOError('Could not connect to xmpp server')    
