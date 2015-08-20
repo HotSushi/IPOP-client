@@ -65,6 +65,10 @@ class Connect() :
         dic ["tincan_logging"] = 2
         dic ["nick"] = dic["xmpp_username"].split('@')[0]
 
+        # store this from here instead of form field (user will not have to enter password while login) 
+        global jpassword
+        jpassword = dic["xmpp_password"]
+
         self.config = dic
         with open(os.environ['WORKING_DIR']+'conff.json', 'w+') as outfile:
             outfile.write(json.dumps(dic))

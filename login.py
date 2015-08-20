@@ -35,7 +35,10 @@ class LoginWidget(QtGui.QWidget):
         
         self.ui.hostipTxtbox.setText("127.0.0.1:8000")
         self.ui.xmppTxtbox.setText("bob_sushant@xmpp.jp")
-        self.ui.xmppPwTxtbox.setText("bob123")
+        
+        # this is a quick-fix, remove completely afterwards
+        self.ui.xmppPwTxtbox.hide()
+
         self.timer = QTimer()
         
         
@@ -46,12 +49,12 @@ class LoginWidget(QtGui.QWidget):
     def changeView(self):
         xmppTxtbox = self.ui.xmppTxtbox
         xmppPwTxtbox = self.ui.xmppPwTxtbox
-        if(xmppTxtbox.displayText().isEmpty() or xmppPwTxtbox.displayText().isEmpty()):
+        if(xmppTxtbox.displayText().isEmpty()):
             #feature: check if valid Jid
             self.changeStatus('Enter XMPP ID and password')
         else:
             connect.jid = str(xmppTxtbox.displayText())
-            connect.jpassword = str(xmppPwTxtbox.displayText())
+            connect.jpassword = 'null'
             connect.adminip = str(self.ui.hostipTxtbox.displayText())
             connect.instance.generateURL(connect.adminip)
             if(not connect.instance.checkValid()):
