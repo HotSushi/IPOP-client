@@ -48,7 +48,10 @@ class IPOPProcess(QtCore.QObject):
         self.heartbeat.start(HEARTBEAT_CYCLE)
 
     def beat(self):
-        connect.instance.setStatus(connect.jid,'running')
+        try:
+            connect.instance.setStatus(connect.jid,'running')
+        except:
+            return
     
         
     def start(self):

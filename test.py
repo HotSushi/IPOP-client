@@ -73,12 +73,19 @@ def changeIpCallback():
 def loggedin():
     tabs.show()
     loginapp.hide()
-    clientxmpp.instance.add_callback('stop_node',tabs.stopped.emit)
-    clientxmpp.instance.add_callback('change_ip',changeIpCallback)
+    try:
+        clientxmpp.instance.add_callback('stop_node',tabs.stopped.emit)
+        clientxmpp.instance.add_callback('change_ip',changeIpCallback)
+    except:
+        pass
     connect.instance.setStatus(connect.jid,'running')
     
 def loggedout():
-    clientxmpp.instance.disconnect(wait=False)
+    # will error out in case of admin GVPN
+    try:
+        clientxmpp.instance.disconnect(wait=False)
+    except:
+        pass
     connect.instance.setStatus(connect.jid,'stopped')
     process.ipopprocess.stop()
     loginapp.setToLogin()

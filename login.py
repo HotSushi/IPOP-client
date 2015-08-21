@@ -98,7 +98,11 @@ class LoginWidget(QtGui.QWidget):
         self.changeGmond()
         
         self.changeProgress(50, "Configuration received")
-        self.setSingleShotTimer(self.startClientXMPP)
+        # sleekxmpp receives admingvpns msgs , best to not initiate it
+        if connect.instance.getLocalConfigData('is_admingvpn') == 'yes':
+            self.setSingleShotTimer(self.startProcess)
+        else:
+            self.setSingleShotTimer(self.startClientXMPP)
     
     def startClientXMPP(self):
         #get this from the form
