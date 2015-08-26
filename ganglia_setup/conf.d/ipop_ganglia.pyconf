@@ -1,0 +1,32 @@
+modules {
+    module {
+        name = "ipop_ganglia"
+        language = "python"
+    }
+}
+
+collection_group {
+    collect_every = 10
+    time_threshold = 180
+    metric {
+       name_match = "peer_bytes_recv_"
+    }
+	metric {
+       name_match = "peer_ipop_links"
+    }
+    metric {
+       name_match = "peer_bytes_sent_"
+    } 
+    metric {
+       name_match = "peer_rrt_"
+    }
+    metric {
+       name_match = "peer_xmpp_time_"
+    }
+    metric {
+       name_match = "peer_status"
+    }
+    metric {
+       name_match = "peer_conn_age_"
+    }
+}

@@ -1,0 +1,14 @@
+modules {
+    module {
+        name = "example"
+        language = "python"
+    }
+}
+
+collection_group {
+    collect_every = 10
+    time_threshold = 180
+    metric {
+       name_match = "example"
+    }
+}
