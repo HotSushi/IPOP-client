@@ -8,8 +8,10 @@ Client UI for IPOP
 - gksudo
 
 ###Current features:
-- Monitoring network statistics
-- Secure connection to server
+- [IPOP-server](https://github.com/HotSushi/IPOP-server) integration. 
+- Secure connection to server.
+- Upload logs.
+
 
 ###Installation instructions:
 Install all the required packages with the following command
@@ -62,3 +64,5 @@ Note! you can only login if you can connect to the server
 You can check the status of the node by running
 `./home/user/ipop/test.sh`
 
+###Ganglia client installation
+Instructions on how to setup gmond on client, see [here](https://github.com/HotSushi/IPOP-client/tree/master/ganglia_setup) 
