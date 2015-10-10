@@ -34,7 +34,8 @@ class LoginWidget(QtGui.QWidget):
         self.jid = ""
         
         self.ui.hostipTxtbox.setText("127.0.0.1:8000")
-        self.ui.xmppTxtbox.setText("bob_sushant@xmpp.jp")
+        self.ui.xmppTxtbox.setText("alice_sushant@xmpp.jp")
+        self.ui.xmppVpnTxtbox.setText("public_server")
         
         # this is a quick-fix, remove completely afterwards
         self.ui.xmppPwTxtbox.hide()
@@ -56,18 +57,28 @@ class LoginWidget(QtGui.QWidget):
             connect.jid = str(xmppTxtbox.displayText())
             connect.jpassword = 'null'
             connect.adminip = str(self.ui.hostipTxtbox.displayText())
+            connect.vpnname = str(self.ui.xmppVpnTxtbox.displayText())
             connect.instance.generateURL(connect.adminip)
             if(not connect.instance.checkValid()):
                 self.changeStatus('Could not connect')
                 return
             self.ui.loginStackedWidget.setCurrentIndex(1)
             self.changeProgress(10, "Server responded")
-            self.setSingleShotTimer(self.getServerJid)
-            
-    def getServerJid(self):
-        # if the server doesnt respond
+            self.setSingleShotTimer(self.checkClientJidAvailability)
+
+    def checkClientJidAvailability(self):
         try:
-            self.serverjid = connect.instance.getServerJid(connect.jid)
+            self.serverjid = connect.instance.getClientJidAvailable(connect.jid)
+        except:
+            self.changeStatus("Client JID is already in use")
+            self.setToLogin()
+            return
+        self.changeProgress(15, "Client JID available")
+        self.setSingleShotTimer(self.getServerJid)
+    
+    def getServerJid(self):
+        try:
+            self.serverjid = connect.instance.getServerJid(connect.jid, connect.vpnname)
         except:
             self.changeStatus("Server couldn\'t find the JID")
             self.setToLogin()
@@ -81,7 +92,7 @@ class LoginWidget(QtGui.QWidget):
         public_key = self.key.publickey().exportKey('PEM')      
                         
         #when key is succesfully registered emit 'keyreg' signal which will call 'getConfiguration()'     
-        connect.instance.setPublicKey( connect.jid, public_key)
+        connect.instance.setPublicKey( connect.jid, connect.vpnname, public_key)
         self.setSingleShotTimer(self.getConfiguration)
         
     def getConfiguration(self):
@@ -90,7 +101,7 @@ class LoginWidget(QtGui.QWidget):
     
         self.changeProgress(35, "Key registered")       
         
-        enc_data = connect.instance.getConfigData(connect.jid)
+        enc_data = connect.instance.getConfigData(connect.jid, connect.vpnname)
         data = self.key.decrypt(enc_data)
         connect.instance.storeConfigData(data)
         

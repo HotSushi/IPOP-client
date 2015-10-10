@@ -23,28 +23,33 @@ class Connect() :
             print(e.args)
             return False
         return True
-        
-    
-    def getConfigData(self, jid):
-        values = {'type':'getjson','xmppid' : jid}
-        data = urllib.urlencode(values)        
-        response = urllib2.urlopen(self.url+'/get?'+data)
-        return response.read()
-        
-    def getServerJid(self, jid):
-        values = {'type':'getserverjid','xmppid' : jid}
+
+    def getConfigData(self, jid, vpnname):
+        values = {'type':'getjson','xmppid' : jid, "vpnname" : vpnname}
         data = urllib.urlencode(values)        
         response = urllib2.urlopen(self.url+'/get?'+data)
         return response.read()
     
-    def setStatus(self, jid, stat):
-        values = {'type':'change_status', 'xmppid' : jid, 'status' : stat}
+    def getClientJidAvailable(self, jid):
+        values = {'type':'getjidbusy','xmppid' : jid}
+        data = urllib.urlencode(values)
+        response = urllib2.urlopen(self.url+'/get?'+data)
+        return response.read()
+
+    def getServerJid(self, jid, vpnname):
+        values = {'type':'getserverjid','xmppid' : jid, "vpnname" : vpnname}
         data = urllib.urlencode(values)        
+        response = urllib2.urlopen(self.url+'/get?'+data)
+        return response.read()
+    
+    def setStatus(self, jid, vpnname, stat):
+        values = {'type':'change_status', 'xmppid' : jid, "vpnname" : vpnname, 'status' : stat}
+        data = urllib.urlencode(values)
         response = urllib2.urlopen(self.url+'/set?'+data)
         return response.read()
         
-    def setPublicKey(self, jid, PK):
-        values = {'type':'set_public_key','xmppid' : jid, 'public_key':PK}
+    def setPublicKey(self, jid, vpnname, PK):
+        values = {'type':'set_public_key','xmppid' : jid, "vpnname" : vpnname, 'public_key':PK}
         data = urllib.urlencode(values)        
         response = urllib2.urlopen(self.url+'/set?'+data)
         return response.read()
@@ -75,7 +80,7 @@ class Connect() :
         
             
 def init():
-    global instance, jid, jpassword, serverjid, adminip
+    global instance, jid, jpassword, serverjid, adminip, vpnname
     instance = Connect()
     
                                 

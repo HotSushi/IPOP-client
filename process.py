@@ -49,7 +49,7 @@ class IPOPProcess(QtCore.QObject):
 
     def beat(self):
         try:
-            connect.instance.setStatus(connect.jid,'running')
+            connect.instance.setStatus(connect.jid, connect.vpnname, 'running')
         except:
             return
     

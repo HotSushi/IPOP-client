@@ -78,7 +78,7 @@ def loggedin():
         clientxmpp.instance.add_callback('change_ip',changeIpCallback)
     except:
         pass
-    connect.instance.setStatus(connect.jid,'running')
+    connect.instance.setStatus(connect.jid,connect.vpnname,'running')
     
 def loggedout():
     # will error out in case of admin GVPN
@@ -86,7 +86,7 @@ def loggedout():
         clientxmpp.instance.disconnect(wait=False)
     except:
         pass
-    connect.instance.setStatus(connect.jid,'stopped')
+    connect.instance.setStatus(connect.jid,connect.vpnname,'stopped')
     process.ipopprocess.stop()
     loginapp.setToLogin()
     loginapp.show()
